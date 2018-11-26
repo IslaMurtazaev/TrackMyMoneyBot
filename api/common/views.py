@@ -2,7 +2,7 @@ import json
 from django.http import HttpResponse
 from django.views import View
 
-    
+
 class ViewWrapper(View):
     view_factory = None
 
@@ -12,4 +12,8 @@ class ViewWrapper(View):
         return HttpResponse(json.dumps(body) if body else '', status=status, content_type='application/json')
 
     def post(self, request, *args, **kwargs):
-        raise NotImplemented
+        if request.body:
+            kwargs.update(json.loads(request.body.decode()))
+        body, status = self.view_factory.create().post(**kwargs)
+
+        return HttpResponse(json.dumps(body) if body else '', status=status, content_type='application/json')

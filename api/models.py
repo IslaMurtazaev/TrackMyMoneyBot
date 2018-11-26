@@ -6,6 +6,7 @@ class User(models.Model):
     first_name = models.CharField(max_length=64)
     last_name = models.CharField(max_length=64)
     is_bot = models.BooleanField()
+    is_active = models.BooleanField(default=False)
 
 
 class Message(models.Model):
