@@ -107,3 +107,4 @@ db.sqlite3
 
 .vscode/
 
+api/migrations/*
