@@ -89,6 +89,8 @@ venv/
 ENV/
 env.bak/
 venv.bak/
+.vscode
+.idea
 
 # Spyder project settings
 .spyderproject
@@ -104,7 +106,5 @@ venv.bak/
 .mypy_cache/
 
 db.sqlite3
-
-.vscode/
 
 api/migrations/*

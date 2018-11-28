@@ -132,3 +132,10 @@ STATIC_URL = '/static/'
 # Activate Django-Heroku.
 
 django_heroku.settings(locals())
+
+# Use local settings if dev environment
+
+try:
+    from .local_settings import *
+except ImportError:
+    pass

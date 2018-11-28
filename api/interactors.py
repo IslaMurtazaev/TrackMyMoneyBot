@@ -1,3 +1,6 @@
+from datetime import datetime
+
+
 class CreateUserInteractor:
     def __init__(self, user_repo):
         self.user_repo = user_repo
@@ -26,3 +29,18 @@ class AuthenticateUserInteractor:
 
     def execute(self):
         return self.user_repo.get_user_by_id(self.id)
+
+
+class CreateMessageInteractor:
+    def __init__(self, message_repo):
+        self.message_repo = message_repo
+
+    def set_params(self, id=None, user_id=None, date=None, text=None, **kwargs):
+        self.id = id
+        self.user_id = user_id
+        self.date = datetime.utcfromtimestamp(date)
+        self.text = text
+        return self
+
+    def execute(self):
+        return self.message_repo.create_message(id=self.id, user_id=self.user_id, date=self.date, text=self.text)
