@@ -1,4 +1,5 @@
 from datetime import datetime
+from django.utils import timezone
 
 
 class CreateUserInteractor:
@@ -39,6 +40,7 @@ class CreateMessageInteractor:
         self.id = id
         self.user_id = user_id
         self.date = datetime.utcfromtimestamp(date)
+        self.date = timezone.make_aware(self.date)
         self.text = text
         return self
 
