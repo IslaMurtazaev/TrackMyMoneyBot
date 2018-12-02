@@ -1,13 +1,19 @@
-from api.repos import UserRepo, MessageRepo
+from api.repos import UserRepo, MessageRepo, ConsumptionRepo
 
 
 class UserRepoFactory:
     @staticmethod
     def create():
-        return UserRepo()
+        return UserRepo
 
 
 class MessageRepoFactory:
     @staticmethod
     def create():
-        return MessageRepo()
+        return MessageRepo
+
+
+class ConsumptionRepoFactory:
+    @staticmethod
+    def create():
+        return ConsumptionRepo
