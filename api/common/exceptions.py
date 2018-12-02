@@ -11,3 +11,8 @@ class EntityDoesNotExist(BotException):
 class PermissionDenied(BotException):
     def __init__(self, message="Permission denied"):
         super().__init__(message)
+
+
+class UnsupportedContentType(BotException):
+    def __init__(self, message="Unsupported content type"):
+        super().__init__(message)
