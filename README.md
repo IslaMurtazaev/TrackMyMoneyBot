@@ -21,7 +21,7 @@ source venv/bin/activate
 pip install -r requirements.txt
 ```
 
-* create a ``.env`` file with your django ``SECRET_KEY`` and telegram ``BOT_TOKEN``
+* create a ``local_settings.py`` file with your django ``SECRET_KEY`` and telegram ``BOT_TOKEN`` in ``main`` folder
 
 
 ### Start server
