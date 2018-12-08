@@ -1,6 +1,8 @@
 import re
 from datetime import datetime
 from django.utils import timezone
+from telepot.namedtuple import InlineKeyboardButton, InlineKeyboardMarkup
+
 from api.common.exceptions import UnsupportedContentType
 
 
@@ -56,6 +58,31 @@ class CreateMessageInteractor:
             raise UnsupportedContentType('No text found')
 
 
+class HandleCallbackQueryInteractor:
+    def __init__(self, bot, consumption_repo):
+        self.bot = bot
+        self.consumption_repo = consumption_repo
+
+    def set_params(self, user=None, **kwargs):
+        self.user = user
+        self.data = kwargs.get("data")
+        return self
+
+    def execute(self):
+        if self.data == "count_this_month":
+            consumptions = self.consumption_repo.get_all_in_current_month(user_id=self.user.id)
+            sum = 0
+            for consumption in consumptions:
+                sum += consumption.cost
+            self.bot.sendMessage(self.user.id, "You have spent {} money in this month".format(sum))
+        elif self.data == "count_this_day":
+            consumptions = self.consumption_repo.get_all_in_current_day(user_id=self.user.id)
+            sum = 0
+            for consumption in consumptions:
+                sum += consumption.cost
+            self.bot.sendMessage(self.user.id, "You have spent {} money during this day".format(sum))
+
+
 class HandleMessageInteractor:
     def __init__(self, bot, consumption_repo):
         self.bot = bot
@@ -69,19 +96,32 @@ class HandleMessageInteractor:
     def execute(self):
         if self.user.is_active:
             if self.message.text.startswith("/spent"):
-                p = re.compile("/spent\s*(\d+)\s*(.*)")
-                m = p.match(self.message.text)
-                if m is not None:
-                    cost = m.group(1)
-                    comment = m.group(2)
-                    self.consumption_repo.create_consumption(user_id=self.user.id, date=self.message.date,
-                                                             cost=cost, comment=comment)
-                    self.bot.sendMessage(self.user.id, "Got it!")
-                else:
-                    self.bot.sendMessage(self.user.id,
-                                         "Didn't catch that. Please type it like this \"/spent 100 on taco\"")
+                self._handle_spent_command()
+            elif self.message.text.startswith("/count"):
+                self._handle_count_command()
         else:
             self.bot.sendMessage(
                 self.user.id, ('Hello ' + self.user.first_name +
                                '! Before I can track your budget, you need to activate your account')
             )
+
+    def _handle_spent_command(self):
+        p = re.compile("/spent\s*(\d+)\s*(.*)")
+        m = p.match(self.message.text)
+        if m is not None:
+            cost = m.group(1)
+            comment = m.group(2)
+            self.consumption_repo.create_consumption(user_id=self.user.id, date=self.message.date,
+                                                     cost=cost, comment=comment)
+            self.bot.sendMessage(self.user.id, "Got it!")
+        else:
+            self.bot.sendMessage(self.user.id,
+                                 "Didn't catch that. Please type it like this \"/spent 100 on taco\"")
+
+    def _handle_count_command(self):
+        keyboard = InlineKeyboardMarkup(inline_keyboard=[
+            [InlineKeyboardButton(text="This month", callback_data="count_this_month")],
+            [InlineKeyboardButton(text="This day", callback_data="count_this_day")],
+        ])
+
+        self.bot.sendMessage(self.user.id, "What exactly you want to count?", reply_markup=keyboard)

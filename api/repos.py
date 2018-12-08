@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from api.models import User, Message, Consumption
 from api.common.exceptions import EntityDoesNotExist
 
@@ -68,3 +70,15 @@ class ConsumptionRepo:
         consumption.save()
         return consumption
 
+    @staticmethod
+    def get_all_in_current_month(user_id):
+        now = datetime.now()
+        this_month_consumptions = Consumption.objects.filter(user_id=user_id,
+                                                             date__year=now.year, date__month=now.month)
+        return this_month_consumptions
+
+    @staticmethod
+    def get_all_in_current_day(user_id):
+        now = datetime.now()
+        this_month_consumptions = Consumption.objects.filter(user_id=user_id, date__day=now.day)
+        return this_month_consumptions

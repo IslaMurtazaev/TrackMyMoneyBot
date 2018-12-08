@@ -1,7 +1,8 @@
 from telepot import Bot
 from main.settings import BOT_TOKEN
 from api.factories.repos import UserRepoFactory, MessageRepoFactory, ConsumptionRepoFactory
-from api.interactors import CreateUserInteractor, AuthenticateUserInteractor, CreateMessageInteractor, HandleMessageInteractor
+from api.interactors import CreateUserInteractor, AuthenticateUserInteractor, CreateMessageInteractor, \
+    HandleMessageInteractor, HandleCallbackQueryInteractor
 
 
 class CreateUserInteractorFactory:
@@ -31,3 +32,11 @@ class HandleMessageInteractorFactory:
         bot = Bot(BOT_TOKEN)
         consumption_repo = ConsumptionRepoFactory.create()
         return HandleMessageInteractor(bot, consumption_repo)
+
+
+class HandleCallbackQueryInteractorFactory:
+    @staticmethod
+    def create():
+        bot = Bot(BOT_TOKEN)
+        consumption_repo = ConsumptionRepoFactory.create()
+        return HandleCallbackQueryInteractor(bot, consumption_repo)
