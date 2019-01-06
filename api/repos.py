@@ -80,5 +80,6 @@ class ConsumptionRepo:
     @staticmethod
     def get_all_in_current_day(user_id):
         now = datetime.now()
-        this_day_consumptions = Consumption.objects.filter(user_id=user_id, date__day=now.day)
+        this_day_consumptions = Consumption.objects.filter(user_id=user_id, date__year=now.year,
+                                                           date__month=now.month, date__day=now.day)
         return this_day_consumptions
