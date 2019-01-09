@@ -99,6 +99,8 @@ class HandleMessageInteractor:
                 self._handle_spent_command()
             elif self.message.text.startswith("/count"):
                 self._handle_count_command()
+            elif self.message.text.startswith("/help"):
+                self._handle_help_command()
         else:
             self.bot.sendMessage(
                 self.user.id, ('Hello ' + self.user.first_name +
@@ -125,3 +127,11 @@ class HandleMessageInteractor:
         ])
 
         self.bot.sendMessage(self.user.id, "What exactly you want to count?", reply_markup=keyboard)
+
+    def _handle_help_command(self):
+        self.bot.sendMessage(self.user.id,
+        "At your service! I am here to help you log your financial spendings, so\
+ that you don't have to memorize it or write anything on paper)\n\n\
+ In case you don't know, these are the commands to ask me:\n\n\
+ /spent - log your spending \n(e.g. \"/spent 130 on shaurma\")\n\
+ /count - get a sum of all your spendings in current month/day")
