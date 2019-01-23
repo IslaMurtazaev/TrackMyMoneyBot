@@ -6,7 +6,7 @@ Simple bot that uses a Telegram API to track financial spendings
 * create a virtual environment inside a root folder
 
 ```bash
-python -m venv ./venv
+virtualenv --no-site-packages --distribute -p /usr/bin/python3 venv
 ```
 
 * enter virtual environment
@@ -21,16 +21,21 @@ source venv/bin/activate
 pip install -r requirements.txt
 ```
 
+* run migrations
+
+```bash
+python manage.py migrate
+```
+
 * create a ``local_settings.py`` file with your django ``SECRET_KEY`` and telegram ``BOT_TOKEN`` in ``main`` folder
-
-
-### Start server
 
 * set a webhook with telegram api (replace {data} with your own)
 
 ```bash
 curl https://api.telegram.org/bot{BOT_TOKEN}/setWebhook?url={WEBHOOK_URL}
 ```
+
+### Start server
 
 * enter virtual environment
 
@@ -39,6 +44,7 @@ source venv/bin/activate
 ```
 
 * start django server
+
 ```bash
 python manage.py runserver
 ```
