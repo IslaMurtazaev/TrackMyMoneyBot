@@ -83,3 +83,11 @@ class ConsumptionRepo:
         this_day_consumptions = Consumption.objects.filter(user_id=user_id, date__year=now.year,
                                                            date__month=now.month, date__day=now.day)
         return this_day_consumptions
+
+    @staticmethod
+    def delete_last(user_id):
+        try:
+            last_consumption = Consumption.objects.filter(user_id=user_id).latest("date")
+            last_consumption.delete()
+        except Consumption.DoesNotExist:
+            raise EntityDoesNotExist("Consumption does not exist")

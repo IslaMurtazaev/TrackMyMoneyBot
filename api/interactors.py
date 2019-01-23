@@ -3,7 +3,7 @@ from datetime import datetime
 from django.utils import timezone
 from telepot.namedtuple import InlineKeyboardButton, InlineKeyboardMarkup
 
-from api.common.exceptions import UnsupportedContentType
+from api.common.exceptions import UnsupportedContentType, EntityDoesNotExist
 
 
 class CreateUserInteractor:
@@ -81,6 +81,14 @@ class HandleCallbackQueryInteractor:
             for consumption in consumptions:
                 sum += consumption.cost
             self.bot.sendMessage(self.user.id, "You have spent {} money during this day".format(sum))
+        elif self.data == "cancel_last_consumption":
+            try:
+                self.consumption_repo.delete_last(self.user.id)
+                self.bot.sendMessage(self.user.id, "Removed last consumption")
+            except EntityDoesNotExist:
+                self.bot.sendMessage(self.user.id, "There are no records to be removed!")
+        elif self.data == "send_list_of_consumptions":
+            self.bot.sendMessage(self.user.id, "Haven't programmed this path yet...")
 
 
 class HandleMessageInteractor:
@@ -101,6 +109,8 @@ class HandleMessageInteractor:
                 self._handle_count_command()
             elif self.message.text.startswith("/help"):
                 self._handle_help_command()
+            elif self.message.text.startswith("/cancel"):
+                self._handle_cancel_command()
         else:
             self.bot.sendMessage(
                 self.user.id, ('Hello ' + self.user.first_name +
@@ -135,3 +145,12 @@ class HandleMessageInteractor:
  In case you don't know, these are the commands to ask me:\n\n\
  /spent - log your spending \n(e.g. \"/spent 130 on shaurma\")\n\
  /count - get a sum of all your spendings in current month/day")
+
+
+    def _handle_cancel_command(self):
+        keyboard = InlineKeyboardMarkup(inline_keyboard=[
+            [InlineKeyboardButton(text="Last one", callback_data="cancel_last_consumption")],
+            [InlineKeyboardButton(text="Choose from the list", callback_data="send_list_of_consumptions")],
+        ])
+
+        self.bot.sendMessage(self.user.id, "Which consumption you want to cancel?", reply_markup=keyboard)
