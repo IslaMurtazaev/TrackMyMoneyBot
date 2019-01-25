@@ -102,7 +102,7 @@ class ConsumptionRepo:
     @staticmethod
     def get_last_five(user_id):
         try:
-            last_five_consumptions = Consumption.objects.filter(user_id=user_id).order_by("id")[:5]
+            last_five_consumptions = Consumption.objects.filter(user_id=user_id).order_by("id")[::-1][:5]
             return last_five_consumptions
         except Consumption.DoesNotExist:
             raise EntityDoesNotExist("Consumption does not exist")
