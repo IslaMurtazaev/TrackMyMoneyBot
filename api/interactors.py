@@ -106,10 +106,10 @@ class HandleMessageInteractor:
                 self._handle_spent_command()
             elif self.message.text.startswith("/count"):
                 self._handle_count_command()
-            elif self.message.text.startswith("/help"):
-                self._handle_help_command()
             elif self.message.text.startswith("/cancel"):
                 self._handle_cancel_command()
+            elif self.message.text.startswith("/"):
+                self._handle_help_command()
         else:
             self.bot.sendMessage(
                 self.user.id, ('Hello ' + self.user.first_name +
@@ -143,7 +143,8 @@ class HandleMessageInteractor:
  that you don't have to memorize it or write anything on paper)\n\n\
  In case you don't know, these are the commands to ask me:\n\n\
  /spent - log your spending \n(e.g. \"/spent 130 on shaurma\")\n\
- /count - get a sum of all your spendings in current month/day")
+ /count - get a sum of all your spendings in current month/day\n\
+ /cancel - in case of accidentally saving a spending it can be canceled")
 
     def _handle_cancel_command(self):
         last_five_consumptions = self.consumption_repo.get_last_five(self.user.id)
