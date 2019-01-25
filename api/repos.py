@@ -91,3 +91,18 @@ class ConsumptionRepo:
             last_consumption.delete()
         except Consumption.DoesNotExist:
             raise EntityDoesNotExist("Consumption does not exist")
+
+    @staticmethod
+    def delete_by_id(user_id, consumption_id):
+        try:
+            Consumption.objects.get(user_id=user_id, id=consumption_id).delete()
+        except Consumption.DoesNotExist:
+            raise EntityDoesNotExist("Consumption does not exist")
+
+    @staticmethod
+    def get_last_five(user_id):
+        try:
+            last_five_consumptions = Consumption.objects.filter(user_id=user_id).order_by("id")[:5]
+            return last_five_consumptions
+        except Consumption.DoesNotExist:
+            raise EntityDoesNotExist("Consumption does not exist")

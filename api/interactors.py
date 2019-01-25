@@ -71,24 +71,23 @@ class HandleCallbackQueryInteractor:
     def execute(self):
         if self.data == "count_this_month":
             consumptions = self.consumption_repo.get_all_in_current_month(user_id=self.user.id)
-            sum = 0
-            for consumption in consumptions:
-                sum += consumption.cost
-            self.bot.sendMessage(self.user.id, "You have spent {} money in this month".format(sum))
+            consumptions_sum = sum(consumption.cost for consumption in consumptions)
+            self.bot.sendMessage(self.user.id, "You have spent {} money in this month".format(consumptions_sum))
+
         elif self.data == "count_this_day":
             consumptions = self.consumption_repo.get_all_in_current_day(user_id=self.user.id)
-            sum = 0
-            for consumption in consumptions:
-                sum += consumption.cost
-            self.bot.sendMessage(self.user.id, "You have spent {} money during this day".format(sum))
-        elif self.data == "cancel_last_consumption":
+            consumptions_sum = sum(consumption.cost for consumption in consumptions)
+            self.bot.sendMessage(self.user.id, "You have spent {} money during this day".format(consumptions_sum))
+
+        elif self.data.startswith("remove_consumption_with_id"):
+            p = re.compile("remove_consumption_with_id=(\d+)")
+            m = p.match(self.data)
+            consumption_id = int(m.group(1))
             try:
-                self.consumption_repo.delete_last(self.user.id)
-                self.bot.sendMessage(self.user.id, "Removed last consumption")
+                self.consumption_repo.delete_by_id(user_id=self.user.id, consumption_id=consumption_id)
+                self.bot.sendMessage(self.user.id, "Deleted")
             except EntityDoesNotExist:
-                self.bot.sendMessage(self.user.id, "There are no records to be removed!")
-        elif self.data == "send_list_of_consumptions":
-            self.bot.sendMessage(self.user.id, "Haven't programmed this path yet...")
+                self.bot.sendMessage(self.user.id, "Something went wrong")
 
 
 class HandleMessageInteractor:
@@ -140,17 +139,20 @@ class HandleMessageInteractor:
 
     def _handle_help_command(self):
         self.bot.sendMessage(self.user.id,
-        "At your service! I am here to help you log your financial spendings, so\
+                             "At your service! I am here to help you log your financial spendings, so\
  that you don't have to memorize it or write anything on paper)\n\n\
  In case you don't know, these are the commands to ask me:\n\n\
  /spent - log your spending \n(e.g. \"/spent 130 on shaurma\")\n\
  /count - get a sum of all your spendings in current month/day")
 
-
     def _handle_cancel_command(self):
-        keyboard = InlineKeyboardMarkup(inline_keyboard=[
-            [InlineKeyboardButton(text="Last one", callback_data="cancel_last_consumption")],
-            [InlineKeyboardButton(text="Choose from the list", callback_data="send_list_of_consumptions")],
-        ])
-
+        last_five_consumptions = self.consumption_repo.get_last_five(self.user.id)
+        inline_keyboard = []
+        for consumption in last_five_consumptions:
+            if consumption.comment == "":
+                consumption.comment = "No comment"
+            inline_keyboard.append([InlineKeyboardButton(text=consumption.comment,
+                                                         callback_data="remove_consumption_with_id={}".format(
+                                                             consumption.id))])
+        keyboard = InlineKeyboardMarkup(inline_keyboard=inline_keyboard)
         self.bot.sendMessage(self.user.id, "Which consumption you want to cancel?", reply_markup=keyboard)
