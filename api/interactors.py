@@ -157,3 +157,14 @@ class HandleMessageInteractor:
                                                              consumption.id))])
         keyboard = InlineKeyboardMarkup(inline_keyboard=inline_keyboard)
         self.bot.sendMessage(self.user.id, "Which consumption you want to cancel?", reply_markup=keyboard)
+
+
+class ReminderInteractor:
+    def __init__(self, user_repo, bot):
+        self.user_repo = user_repo
+        self.bot = bot
+
+    def execute(self):
+        active_users = self.user_repo.get_all(is_active=True)
+        for user in active_users:
+            self.bot.sendMessage(user.id, "Don't forget to send me your today's spending {}".format(user.first_name))

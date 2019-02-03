@@ -15,6 +15,11 @@ class UserRepo:
         return user
 
     @staticmethod
+    def get_all(**kwargs):
+        users = User.objects.filter(**kwargs)
+        return users
+
+    @staticmethod
     def create_user(id, first_name, last_name, is_bot, is_active):
         user = User()
         user.id = id
