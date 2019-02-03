@@ -108,12 +108,15 @@ class HandleMessageInteractor:
                 self._handle_count_command()
             elif self.message.text.startswith("/cancel"):
                 self._handle_cancel_command()
-            elif self.message.text.startswith("/"):
+            elif self.message.text.startswith("/help"):
                 self._handle_help_command()
+            elif self.message.text.startswith("/"):
+                self.bot.sendMessage(self.user.id, "I don't understand this command, you can use /help" +
+                                     " to get a list of my avalilable commands")
         else:
             self.bot.sendMessage(
-                self.user.id, ('Hello ' + self.user.first_name +
-                               '! Before I can track your budget, you need to activate your account')
+                self.user.id, 'Hello {}! Before I can track your budget, you need to activate your account'.format(
+                    self.user.id)
             )
 
     def _handle_spent_command(self):
@@ -139,12 +142,12 @@ class HandleMessageInteractor:
 
     def _handle_help_command(self):
         self.bot.sendMessage(self.user.id,
-                             "At your service! I am here to help you log your financial spendings, so\
- that you don't have to memorize it or write anything on paper)\n\n\
- In case you don't know, these are the commands to ask me:\n\n\
- /spent - log your spending \n(e.g. \"/spent 130 on shaurma\")\n\
- /count - get a sum of all your spendings in current month/day\n\
- /cancel - in case of accidentally saving a spending it can be canceled")
+                             "At your service! I am here to help you log your financial spendings, so" +
+                             " that you don't have to memorize it or write anything on paper)\n\n" +
+                             "In case you don't know, these are the commands to ask me:\n\n" +
+                             "/spent - log your spending \n(e.g. \"/spent 130 on shaurma\")\n" +
+                             "/count - get a sum of all your spendings in current month/day\n" +
+                             "/cancel - in case of accidentally saving a spending it can be canceled")
 
     def _handle_cancel_command(self):
         last_five_consumptions = self.consumption_repo.get_last_five(self.user.id)
