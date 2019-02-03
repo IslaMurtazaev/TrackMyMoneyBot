@@ -27,13 +27,18 @@ pip install -r requirements.txt
 python manage.py migrate
 ```
 
-* create a ``local_settings.py`` file with your django ``SECRET_KEY`` and telegram ``BOT_TOKEN`` in ``main`` folder
+* create a ``local_settings.py`` file with your django ``SECRET_KEY``, telegram ``BOT_TOKEN`` and ``APP_URL`` in ``main`` folder.
 
-* set a webhook with telegram api (replace {data} with your own)
+To generate ``BOT_TOKEN`` you should [create a new bot](https://www.siteguarding.com/en/how-to-get-telegram-bot-api-token).
 
+Expample:
 ```bash
-curl https://api.telegram.org/bot{BOT_TOKEN}/setWebhook?url={WEBHOOK_URL}
+SECRET_KEY = "my_secret_key"
+BOT_TOKEN = "my_bot_token"
+APP_URL = "https://my_domain.com"
 ```
+ 
+Using this information, after you start the server, bot will automatically set webhook.
 
 ### Start server
 
