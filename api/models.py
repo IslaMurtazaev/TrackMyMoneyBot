@@ -3,8 +3,8 @@ from django.utils import timezone
 
 
 class User(models.Model):
-    first_name = models.CharField(max_length=64)
-    last_name = models.CharField(max_length=64)
+    first_name = models.CharField(max_length=64, null=True)
+    last_name = models.CharField(max_length=64, null=True)
     is_bot = models.BooleanField()
     is_active = models.BooleanField(default=False)
 
