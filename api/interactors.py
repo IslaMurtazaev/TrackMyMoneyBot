@@ -101,6 +101,9 @@ class HandleMessageInteractor:
         return self
 
     def execute(self):
+         if (self.message.text.lower() == "hi"):
+             greeting_niffler_sticker_id = "CAADAgADBAQAAsSraAseYIn8uE2RPgI"
+             self.bot.sendSticker(self.user.id, greeting_niffler_sticker_id)
         if self.user.is_active:
             if self.message.text.startswith("/spent"):
                 self._handle_spent_command()
