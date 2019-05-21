@@ -28,6 +28,7 @@ python manage.py migrate
 ```
 
 * create a ``local_settings.py`` file with your django ``SECRET_KEY``, telegram ``BOT_TOKEN`` and ``APP_URL`` in ``main`` folder.
+You can also add ``TIME_ZONE`` and ``ACTIVATION_KEY`` to customize your bot.
 
 To generate ``BOT_TOKEN`` you should [create a new bot](https://www.siteguarding.com/en/how-to-get-telegram-bot-api-token).
 
