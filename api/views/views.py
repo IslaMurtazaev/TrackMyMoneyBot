@@ -20,6 +20,7 @@ class MessageReceiverView:
             return "", 200
         else:
             user = self._authenticate_user(kwargs['message']['from'])
+            print(user)
             message = self.create_message_interactor.set_params(user_id=user.id, **kwargs).execute()
 
             self.handle_message_interactor.set_params(user, message).execute()

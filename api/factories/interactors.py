@@ -31,7 +31,8 @@ class HandleMessageInteractorFactory:
     def create():
         bot = Bot(BOT_TOKEN)
         consumption_repo = ConsumptionRepoFactory.create()
-        return HandleMessageInteractor(bot, consumption_repo)
+        user_repo = UserRepoFactory.create()
+        return HandleMessageInteractor(bot, consumption_repo, user_repo)
 
 
 class HandleCallbackQueryInteractorFactory:

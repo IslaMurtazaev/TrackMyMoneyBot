@@ -31,6 +31,13 @@ class UserRepo:
         user.save()
         return user
 
+    @staticmethod
+    def activate_user(id):
+        user = User.objects.get(pk=id)
+        user.is_active = True
+        user.save()
+        return user
+
 
 class MessageRepo:
     @staticmethod
@@ -108,6 +115,14 @@ class ConsumptionRepo:
     def get_last_five(user_id):
         try:
             last_five_consumptions = Consumption.objects.filter(user_id=user_id).order_by("id")[::-1][:5]
+            return last_five_consumptions
+        except Consumption.DoesNotExist:
+            raise EntityDoesNotExist("Consumption does not exist")
+
+    @staticmethod
+    def get_last(user_id):
+        try:
+            last_five_consumptions = Consumption.objects.filter(user_id=user_id).order_by("id")[::-1][0]
             return last_five_consumptions
         except Consumption.DoesNotExist:
             raise EntityDoesNotExist("Consumption does not exist")

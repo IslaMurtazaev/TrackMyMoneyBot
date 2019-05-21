@@ -4,6 +4,8 @@ from django.utils import timezone
 from telepot.namedtuple import InlineKeyboardButton, InlineKeyboardMarkup
 
 from api.common.exceptions import UnsupportedContentType, EntityDoesNotExist
+from api.constants import GREETING_STICKER
+from main.settings import ACTIVATION_KEY
 
 
 class CreateUserInteractor:
@@ -91,9 +93,10 @@ class HandleCallbackQueryInteractor:
 
 
 class HandleMessageInteractor:
-    def __init__(self, bot, consumption_repo):
+    def __init__(self, bot, consumption_repo, user_repo):
         self.bot = bot
         self.consumption_repo = consumption_repo
+        self.user_repo = user_repo
 
     def set_params(self, user=None, message=None):
         self.user = user
@@ -101,9 +104,6 @@ class HandleMessageInteractor:
         return self
 
     def execute(self):
-         if (self.message.text.lower() == "hi"):
-             greeting_niffler_sticker_id = "CAADAgADBAQAAsSraAseYIn8uE2RPgI"
-             self.bot.sendSticker(self.user.id, greeting_niffler_sticker_id)
         if self.user.is_active:
             if self.message.text.startswith("/spent"):
                 self._handle_spent_command()
@@ -115,11 +115,15 @@ class HandleMessageInteractor:
                 self._handle_help_command()
             elif self.message.text.startswith("/"):
                 self.bot.sendMessage(self.user.id, "I don't understand this command, you can use /help" +
-                                     " to get a list of my avalilable commands")
+                                     " to get a list of my available commands")
+        elif self.message.text.startswith("/start"):
+            self._handle_start_command()
+        elif self.message.text.startswith("/activate"):
+            self._handle_activate_command()
         else:
             self.bot.sendMessage(
                 self.user.id, 'Hello {}! Before I can track your budget, you need to activate your account'.format(
-                    self.user.id)
+                    self.user.first_name)
             )
 
     def _handle_spent_command(self):
@@ -145,12 +149,12 @@ class HandleMessageInteractor:
 
     def _handle_help_command(self):
         self.bot.sendMessage(self.user.id,
-                             "At your service! I am here to help you log your financial spendings, so" +
+                             "At your service! I am here to help you log your financial spending, so" +
                              " that you don't have to memorize it or write anything on paper)\n\n" +
                              "In case you don't know, these are the commands to ask me:\n\n" +
-                             "/spent - log your spending \n(e.g. \"/spent 130 on shaurma\")\n" +
-                             "/count - get a sum of all your spendings in current month/day\n" +
-                             "/cancel - in case of accidentally saving a spending it can be canceled")
+                             "/spent - log your spending\n" +
+                             "/count - get a sum of all your spending in current month/day\n" +
+                             "/cancel - cancel accidentally saved spending")
 
     def _handle_cancel_command(self):
         last_five_consumptions = self.consumption_repo.get_last_five(self.user.id)
@@ -163,6 +167,19 @@ class HandleMessageInteractor:
                                                              consumption.id))])
         keyboard = InlineKeyboardMarkup(inline_keyboard=inline_keyboard)
         self.bot.sendMessage(self.user.id, "Which consumption you want to cancel?", reply_markup=keyboard)
+
+    def _handle_start_command(self):
+        self.bot.sendSticker(self.user.id, GREETING_STICKER)
+        self.bot.sendMessage(self.user.id, "Hey! My name is Niffler. Before we start you need to enter activation key )")
+
+    def _handle_activate_command(self):
+        p = re.compile("/activate\s*(.*)")
+        m = p.match(self.message.text)
+        if m is not None and m.group(1) == ACTIVATION_KEY:
+            self.user_repo.activate_user(self.user.id)
+            self.bot.sendMessage(self.user.id, self.user.first_name + " your account is successfully activated!")
+        else:
+            self.bot.sendMessage(self.user.id, "Activation key is not valid")
 
 
 class ReminderInteractor:

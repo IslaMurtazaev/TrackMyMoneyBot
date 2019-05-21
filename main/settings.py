@@ -137,6 +137,8 @@ django_heroku.settings(locals())
 
 # Use local settings if dev environment
 
+ACTIVATION_KEY = "DEFAULT_KEY"
+
 try:
     from .local_settings import *
 except ImportError:
