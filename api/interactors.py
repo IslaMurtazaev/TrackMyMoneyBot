@@ -157,15 +157,18 @@ class HandleMessageInteractor:
 
     def _handle_cancel_command(self):
         last_five_consumptions = self.consumption_repo.get_last_five(self.user.id)
-        inline_keyboard = []
-        for consumption in last_five_consumptions:
-            if consumption.comment == "":
-                consumption.comment = "No comment"
-            inline_keyboard.append([InlineKeyboardButton(text=consumption.comment,
-                                                         callback_data="remove_consumption_with_id={}".format(
-                                                             consumption.id))])
-        keyboard = InlineKeyboardMarkup(inline_keyboard=inline_keyboard)
-        self.bot.sendMessage(self.user.id, "Which consumption you want to cancel?", reply_markup=keyboard)
+        if len(last_five_consumptions) == 0:
+            self.bot.sendMessage(self.user.id, "There is nothing to cancel")
+        else:
+            inline_keyboard = []
+            for consumption in last_five_consumptions:
+                if consumption.comment == "":
+                    consumption.comment = "No comment"
+                inline_keyboard.append([InlineKeyboardButton(text=consumption.comment,
+                                                             callback_data="remove_consumption_with_id={}".format(
+                                                              consumption.id))])
+            keyboard = InlineKeyboardMarkup(inline_keyboard=inline_keyboard)
+            self.bot.sendMessage(self.user.id, "Which consumption you want to cancel?", reply_markup=keyboard)
 
     def _handle_start_command(self):
         self.bot.sendSticker(self.user.id, GREETING_STICKER)
