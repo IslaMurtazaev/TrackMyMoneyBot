@@ -114,15 +114,14 @@ class HandleMessageInteractor:
             elif self.message.text.startswith("/help"):
                 self._handle_help_command()
             elif self.message.text.startswith("/"):
-                self.bot.sendMessage(self.user.id, "I don't understand this command, you can use /help" +
-                                     " to get a list of my available commands")
+                self.bot.sendMessage(self.user.id, "I don't understand this command 🤷🏻‍♂️‍‍‍, please use /help")
         elif self.message.text.startswith("/start"):
             self._handle_start_command()
         elif self.message.text.startswith("/activate"):
             self._handle_activate_command()
         else:
             self.bot.sendMessage(
-                self.user.id, 'Hello {}! Before I can track your budget, you need to activate your account'.format(
+                self.user.id, 'Hello {}👋, before I can track your budget, you need to activate your account 🗝'.format(
                     self.user.first_name)
             )
 
@@ -149,12 +148,12 @@ class HandleMessageInteractor:
 
     def _handle_help_command(self):
         self.bot.sendMessage(self.user.id,
-                             "At your service! I am here to help you log your financial spending, so" +
-                             " that you don't have to memorize it or write anything on paper)\n\n" +
-                             "In case you don't know, these are the commands to ask me:\n\n" +
-                             "/spent - log your spending\n" +
-                             "/count - get a sum of all your spending in current month/day\n" +
-                             "/cancel - cancel accidentally saved spending")
+                             "At your service 🐶 \nI am here to help you log your financial spending, so" +
+                             " that you don't have to memorize them or install a special app 🙅🏻‍♂️\n\n" +
+                             "In case you don't know, these are the commands to ask me 💁🏻‍♂️️\n\n" +
+                             "/spent - log your spending 💸\n" +
+                             "/count - get a sum of all your spending in current month/day 💴\n" +
+                             "/cancel - cancel accidentally saved spending ❌")
 
     def _handle_cancel_command(self):
         last_five_consumptions = self.consumption_repo.get_last_five(self.user.id)
@@ -177,9 +176,9 @@ class HandleMessageInteractor:
         m = p.match(self.message.text)
         if m is not None and m.group(1) == ACTIVATION_KEY:
             self.user_repo.activate_user(self.user.id)
-            self.bot.sendMessage(self.user.id, self.user.first_name + " your account is successfully activated!")
+            self.bot.sendMessage(self.user.id, self.user.first_name + " your account is successfully activated! ✅")
         else:
-            self.bot.sendMessage(self.user.id, "Activation key is not valid")
+            self.bot.sendMessage(self.user.id, "Activation key is not valid 🛑")
 
 
 class ReminderInteractor:
